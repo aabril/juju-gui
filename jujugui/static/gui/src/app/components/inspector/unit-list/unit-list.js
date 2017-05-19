@@ -125,24 +125,16 @@ YUI.add('unit-list', function() {
       @param {String} action The action to apply to the units.
     */
     _handleUpdateUnits: function(action) {
-      let unitNames = [];
-      const units = this.props.units;
-      const refs = this.refs;
-      const envResolved = this.props.envResolved;
+      var units = [];
+      var refs = this.refs;
+      var envResolved = this.props.envResolved;
       Object.keys(refs).forEach(function (ref) {
-        let isInstance = ref.split('-')[0] === 'CheckListItem';
+        var isInstance = ref.split('-')[0] === 'CheckListItem';
         if (isInstance && refs[ref].state.checked) {
-          let unitName = ref.slice(ref.indexOf('-') + 1);
-          unitNames.push(unitName);
-          const unit = units.find((u) => u.id === unitName);
-          // If the unit does not have an agent_status, it is not committed,
-          // bail early to prevent superfluous RPC/ECS 
-          if (!unit.agent_status) {
-            return;
-          }
+          var unitName = ref.slice(ref.indexOf('-') + 1);
+          units.push(unitName);
           // On resolve and remove we want to mark the unit as resolved else
-          // Juju won't remove units that are in error. This applies only to
-          // committed units.
+          // Juju won't remove units that are in error.
           if (action === 'resolve' || action === 'remove') {
             envResolved(unitName, null, false);
           } else if (action === 'retry') {
@@ -151,7 +143,7 @@ YUI.add('unit-list', function() {
         }
       });
       if (action === 'remove') {
-        this.props.destroyUnits(unitNames);
+        this.props.destroyUnits(units);
       }
       this._selectAllUnits(null, false);
     },
